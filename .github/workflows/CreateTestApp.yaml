@@ -53,7 +53,7 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Dump Workflow Information
-        uses: cegekaJG/AL-Go-Actions/DumpWorkflowInfo@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@v6.0
         with:
           shell: powershell
 
@@ -62,18 +62,18 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: cegekaJG/AL-Go-Actions/WorkflowInitialize@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@v6.0
         with:
           shell: powershell
 
       - name: Read settings
-        uses: cegekaJG/AL-Go-Actions/ReadSettings@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: cegekaJG/AL-Go-Actions/ReadSecrets@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@v6.0
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -81,7 +81,7 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Creating a new test app
-        uses: cegekaJG/AL-Go-Actions/CreateApp@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/CreateApp@v6.0
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -95,7 +95,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: cegekaJG/AL-Go-Actions/WorkflowPostProcess@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

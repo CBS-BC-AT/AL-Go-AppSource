@@ -28,7 +28,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: windows-latest
     steps:
-      - uses: cegekaJG/AL-Go-Actions/VerifyPRChanges@cegeka6
+      - uses: CBS-BC-AT/AL-Go-Actions/VerifyPRChanges@v6.0
 
   Initialization:
     needs: [ PregateCheck ]
@@ -43,7 +43,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: cegekaJG/AL-Go-Actions/DumpWorkflowInfo@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@v6.0
         with:
           shell: powershell
 
@@ -55,13 +55,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: cegekaJG/AL-Go-Actions/WorkflowInitialize@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@v6.0
         with:
           shell: powershell
 
       - name: Read settings
         id: ReadSettings
-        uses: cegekaJG/AL-Go-Actions/ReadSettings@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
         with:
           shell: powershell
 
@@ -72,7 +72,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: cegekaJG/AL-Go-Actions/DetermineProjectsToBuild@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineProjectsToBuild@v6.0
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -108,7 +108,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: cegekaJG/AL-Go-Actions/PullRequestStatusCheck@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/PullRequestStatusCheck@v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -116,7 +116,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: cegekaJG/AL-Go-Actions/WorkflowPostProcess@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@v6.0
         if: success() || failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}
