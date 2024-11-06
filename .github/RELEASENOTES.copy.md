@@ -1,4 +1,4 @@
-## cegeka/v6
+## cegeka/v6.0
 
 ### Issues
 
