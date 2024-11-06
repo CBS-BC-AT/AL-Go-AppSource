@@ -38,7 +38,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: cegekaJG/AL-Go-Actions/DumpWorkflowInfo@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@cegeka/v6.0
         with:
           shell: powershell
 
@@ -47,7 +47,7 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: cegekaJG/AL-Go-Actions/WorkflowInitialize@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@cegeka/v6.0
         with:
           shell: powershell
 
@@ -60,20 +60,20 @@ jobs:
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
 
       - name: Read settings
-        uses: cegekaJG/AL-Go-Actions/ReadSettings@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@cegeka/v6.0
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: cegekaJG/AL-Go-Actions/ReadSecrets@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@cegeka/v6.0
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'appSourceContext'
 
       - name: Deliver
-        uses: cegekaJG/AL-Go-Actions/Deliver@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/Deliver@cegeka/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -94,7 +94,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: cegekaJG/AL-Go-Actions/WorkflowPostProcess@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@cegeka/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

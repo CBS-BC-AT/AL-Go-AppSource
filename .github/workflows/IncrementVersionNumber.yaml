@@ -41,7 +41,7 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Dump Workflow Information
-        uses: cegekaJG/AL-Go-Actions/DumpWorkflowInfo@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@cegeka/v6.0
         with:
           shell: powershell
 
@@ -50,18 +50,18 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: cegekaJG/AL-Go-Actions/WorkflowInitialize@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@cegeka/v6.0
         with:
           shell: powershell
 
       - name: Read settings
-        uses: cegekaJG/AL-Go-Actions/ReadSettings@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@cegeka/v6.0
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: cegekaJG/AL-Go-Actions/ReadSecrets@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@cegeka/v6.0
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -69,7 +69,7 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Increment Version Number
-        uses: cegekaJG/AL-Go-Actions/IncrementVersionNumber@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/IncrementVersionNumber@cegeka/v6.0
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -79,7 +79,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: cegekaJG/AL-Go-Actions/WorkflowPostProcess@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@cegeka/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

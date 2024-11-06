@@ -36,7 +36,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: cegekaJG/AL-Go-Actions/DumpWorkflowInfo@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@cegeka/v6.0
         with:
           shell: powershell
 
@@ -45,19 +45,19 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: cegekaJG/AL-Go-Actions/WorkflowInitialize@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@cegeka/v6.0
         with:
           shell: powershell
 
       - name: Read settings
         id: ReadSettings
-        uses: cegekaJG/AL-Go-Actions/ReadSettings@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@cegeka/v6.0
         with:
           shell: powershell
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: cegekaJG/AL-Go-Actions/DetermineDeploymentEnvironments@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeploymentEnvironments@cegeka/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -75,7 +75,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: cegekaJG/AL-Go-Actions/ReadSecrets@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@cegeka/v6.0
         if: steps.DetermineDeploymentEnvironments.outputs.UnknownEnvironment == 1
         with:
           shell: powershell
@@ -141,21 +141,21 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: cegekaJG/AL-Go-Actions/ReadSettings@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@cegeka/v6.0
         with:
           shell: ${{ matrix.shell }}
           get: type,powerPlatformSolutionFolder
 
       - name: Read secrets
         id: ReadSecrets
-        uses: cegekaJG/AL-Go-Actions/ReadSecrets@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@cegeka/v6.0
         with:
           shell: ${{ matrix.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext'
 
       - name: Get Artifacts for deployment
-        uses: cegekaJG/AL-Go-Actions/GetArtifactsForDeployment@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/GetArtifactsForDeployment@cegeka/v6.0
         with:
           shell: ${{ matrix.shell }}
           artifactsVersion: ${{ github.event.inputs.appVersion }}
@@ -163,7 +163,7 @@ jobs:
 
       - name: Deploy to Business Central
         id: Deploy
-        uses: cegekaJG/AL-Go-Actions/Deploy@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/Deploy@cegeka/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -175,7 +175,7 @@ jobs:
 
       - name: Deploy to Power Platform
         if: env.type == 'PTE' && env.powerPlatformSolutionFolder != ''
-        uses: cegekaJG/AL-Go-Actions/DeployPowerPlatform@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/DeployPowerPlatform@cegeka/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -194,7 +194,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: cegekaJG/AL-Go-Actions/WorkflowPostProcess@cegeka6
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@cegeka/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
