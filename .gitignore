@@ -1,0 +1,36 @@
+# BC specific files
+*.app
+*.flf
+*.bclicense
+
+# Metadata
+.DS_Store
+Thumbs.db
+
+# Logs
+TestResults*.xml
+bcptTestResults*.json
+BuildOutput.txt
+
+# Local settings
+launch.json
+
+# Translation files
+*.g.xlf
+
+# Temporary files
+rad.json
+.output/
+.dependencies/
+.buildartifacts/
+.alpackages/
+.packages/
+.alcache/
+.altemplates/
+.altestrunner/
+.snapshots/
+cache_*
+~$*
+
+# Always include the following files
+!dependencies/**/*
