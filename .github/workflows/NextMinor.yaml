@@ -29,7 +29,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@testbranch/v6.0
         with:
           shell: powershell
 
@@ -40,13 +40,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@testbranch/v6.0
         with:
           shell: powershell
 
       - name: Read settings
         id: ReadSettings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/v6.0
         with:
           shell: powershell
 
@@ -57,7 +57,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: CBS-BC-AT/AL-Go-Actions/DetermineProjectsToBuild@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineProjectsToBuild@testbranch/v6.0
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -93,7 +93,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@testbranch/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

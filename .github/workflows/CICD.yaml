@@ -45,7 +45,7 @@ jobs:
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@testbranch/v6.0
         with:
           shell: powershell
 
@@ -56,13 +56,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@testbranch/v6.0
         with:
           shell: powershell
 
       - name: Read settings
         id: ReadSettings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/v6.0
         with:
           shell: powershell
           get: type, powerPlatformSolutionFolder
@@ -74,7 +74,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: CBS-BC-AT/AL-Go-Actions/DetermineProjectsToBuild@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineProjectsToBuild@testbranch/v6.0
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
-        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeliveryTargets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeliveryTargets@testbranch/v6.0
         with:
           shell: powershell
           projectsJson: '${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}'
@@ -95,7 +95,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@testbranch/v6.0
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -103,7 +103,7 @@ jobs:
 
       - name: Determine Delivery Targets
         id: DetermineDeliveryTargets
-        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeliveryTargets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeliveryTargets@testbranch/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -113,7 +113,7 @@ jobs:
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeploymentEnvironments@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeploymentEnvironments@testbranch/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -129,13 +129,13 @@ jobs:
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/v6.0
         with:
           shell: powershell
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: CBS-BC-AT/AL-Go-Actions/CheckForUpdates@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/CheckForUpdates@testbranch/v6.0
         with:
           shell: powershell
           templateUrl: ${{ env.templateUrl }}
@@ -160,7 +160,7 @@ jobs:
       projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
       secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
-      publishArtifacts: ${{ github.ref_name == 'main' || startswith(github.ref_name, 'release/') || startswith(github.ref_name, 'releases/') || needs.Initialization.outputs.deliveryTargetsJson != '[]' || needs.Initialization.outputs.environmentCount > 0 }}
+      publishArtifacts: ${{ github.ref_name == 'main' || github.ref_name == 'test/main' || github.ref_name == 'testmaster' || startswith(github.ref_name, 'release/') || startswith(github.ref_name, 'releases/') || needs.Initialization.outputs.deliveryTargetsJson != '[]' || needs.Initialization.outputs.environmentCount > 0 }}
       signArtifacts: true
       useArtifactCache: true
 
@@ -187,7 +187,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/v6.0
         with:
           shell: powershell
 
@@ -196,7 +196,7 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Build Reference Documentation
-        uses: CBS-BC-AT/AL-Go-Actions/BuildReferenceDocumentation@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/BuildReferenceDocumentation@testbranch/v6.0
         with:
           shell: powershell
           artifacts: '.artifacts'
@@ -233,7 +233,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/v6.0
         with:
           shell: ${{ matrix.shell }}
           get: type,powerPlatformSolutionFolder
@@ -247,7 +247,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@testbranch/v6.0
         with:
           shell: ${{ matrix.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -255,7 +255,7 @@ jobs:
 
       - name: Deploy to Business Central
         id: Deploy
-        uses: CBS-BC-AT/AL-Go-Actions/Deploy@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/Deploy@testbranch/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -267,7 +267,7 @@ jobs:
 
       - name: Deploy to Power Platform
         if: env.type == 'PTE' && env.powerPlatformSolutionFolder != ''
-        uses: CBS-BC-AT/AL-Go-Actions/DeployPowerPlatform@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DeployPowerPlatform@testbranch/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -295,20 +295,20 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/v6.0
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@testbranch/v6.0
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ matrix.deliveryTarget }}Context'
 
       - name: Deliver
-        uses: CBS-BC-AT/AL-Go-Actions/Deliver@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/Deliver@testbranch/v6.0
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -328,7 +328,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@testbranch/v6.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
