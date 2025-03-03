@@ -3,5 +3,8 @@
   "country": "at",
   "appSourceCopMandatoryAffixes": [
     "<affix>"
-  ]
+  ],
+  "appFolders": [],
+  "bcptTestFolders": [],
+  "testFolders": []
 }
