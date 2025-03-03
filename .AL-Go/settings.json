@@ -1,9 +1,7 @@
 {
-  "country": "us",
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/v6.3/Schema/algosettingssyntax.json",
+  "country": "at",
   "appSourceCopMandatoryAffixes": [
     "<affix>"
-  ],
-  "appFolders": [],
-  "testFolders": [],
-  "bcptTestFolders": []
+  ]
 }
