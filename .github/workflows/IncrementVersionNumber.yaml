@@ -10,8 +10,13 @@ on:
         required: false
         default: '*'
       versionNumber:
-        description: Updated Version Number. Use Major.Minor for absolute change, use +Major.Minor for incremental change.
-        required: true
+        description: New Version Number in main branch. Use Major.Minor (optionally add .Build for versioningstrategy 3) for absolute change, or +1, +0.1 (or +0.0.1 for versioningstrategy 3) incremental change.
+        required: false
+        default: ''
+      skipUpdatingDependencies:
+        description: Skip updating dependency version numbers in all apps.
+        type: boolean
+        default: false
       directCommit:
         description: Direct Commit?
         type: boolean
@@ -20,12 +25,6 @@ on:
         description: Use GhTokenWorkflow for PR/Commit?
         type: boolean
         default: false
-
-permissions:
-  actions: read
-  contents: write
-  id-token: write
-  pull-requests: write
 
 defaults:
   run:
@@ -39,29 +38,34 @@ jobs:
   IncrementVersionNumber:
     needs: [ ]
     runs-on: [ windows-latest ]
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      pull-requests: write
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@testbranch/6.3
         with:
           shell: powershell
 
       - name: Checkout
-        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@testbranch/6.3
         with:
           shell: powershell
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@testbranch/6.3
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@testbranch/6.3
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -69,17 +73,18 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Increment Version Number
-        uses: CBS-BC-AT/AL-Go-Actions/IncrementVersionNumber@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/IncrementVersionNumber@testbranch/6.3
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
           projects: ${{ github.event.inputs.projects }}
           versionNumber: ${{ github.event.inputs.versionNumber }}
+          skipUpdatingDependencies: ${{ github.event.inputs.skipUpdatingDependencies }}
           directCommit: ${{ github.event.inputs.directCommit }}
 
       - name: Finalize the workflow
         if: always()
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@testbranch/6.3
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
