@@ -1,4 +1,26 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/v6.3/Schema/algoreposettingssyntax.json",
+  "buildModes": [
+    "Default"
+  ],
+  "customCodeCops": [
+    "https://github.com/StefanMaron/BusinessCentral.LinterCop/releases/latest/download/BusinessCentral.LinterCop.current.dll"
+  ],
+  "doNotPublishApps": true,
+  "enableCodeCop": true,
+  "enablePerTenantExtensionCop": true,
+  "enableUICop": true,
+  "githubRunner": "ubuntu-latest",
+  "rulesetFile": "CegekaAT.ruleset.json",
+  "runs-on": "ubuntu-latest",
+  "skipUpgrade": true,
+  "templateUrl": "https://github.com/CBS-BC-AT/AL-Go-AppSource@cegeka",
+  "templateFiles": [
+    ".github/DeployTo*.ps1",
+    ".schemas/*"
+  ],
   "type": "AppSource App",
-  "templateUrl": "https://github.com/CBS-BC-AT/AL-Go-AppSource@v6.0"
+  "UpdateGitHubGoSystemFilesSchedule": "0 2 * * 2",
+  "useCompilerFolder": true,
+  "vsixFile": "latest"
 }
