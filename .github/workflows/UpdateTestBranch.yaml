@@ -1,7 +1,9 @@
 name: Update Test Branch
 
 on:
-  never:
+  issue_comment:
+    types:
+      created
 
 env:
   TEST_BRANCH: test/main

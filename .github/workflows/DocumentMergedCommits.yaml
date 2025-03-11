@@ -1,7 +1,9 @@
 name: Document Merged Commits
 
 on:
-  never:
+  pull_request:
+    types:
+      closed
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
