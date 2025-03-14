@@ -1,0 +1,121 @@
+# This file is used for automatic labeling of pull requests. It is used by the GitHub Action "Labeler", which is triggered by the "AutoLabel.yml" workflow.
+# It automatically labels pull requests based on the changed files in the pull request.
+# For more information, see https://github.com/actions/labeler
+
+# Custom labels go here
+
+# Labels for AL object types
+Page:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Page.al'
+
+PageExtension:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.PageExt.al'
+
+PageCustomization:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.PageCust.al'
+
+Codeunit:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Codeunit.al'
+
+Table:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Table.al'
+
+TableExtension:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.TableExt.al'
+
+XMLPort:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Xmlport.al'
+
+Report:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Report.al'
+
+RequestPage:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.RequestPage.al'
+
+Query:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Query.al'
+
+Enum:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Enum.al'
+
+EnumExtension:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.EnumExt.al'
+
+ControlAddin:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.ControlAddin.al'
+
+Dotnet:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Dotnet.al'
+
+Profile:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Profile.al'
+
+Interface:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.Interface.al'
+
+PermissionSet:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.PermissionSet.al'
+
+PermissionSetExtension:
+  - changed-files:
+    - any-glob-to-any-file: '*/src/**/*.PermissionSetExt.al'
+
+# Supplemental files
+Dependencies:
+  - changed-files:
+    - any-glob-to-any-file: 'dependencies/**'
+
+Scripts:
+  - changed-files:
+    - any-glob-to-any-file: 'scripts/**'
+
+Documentation:
+  - changed-files:
+    # All files in any docs folder and all markdown files
+    - any-glob-to-any-file: ['*/docs/**', '**/*.md']
+
+Resources:
+  - changed-files:
+    - any-glob-to-any-file: 'resources/**'
+
+# Other labels
+ForNAV:
+  - changed-files:
+    - any-glob-to-any-file: '**/*[Ll]ayout*/*.docx'
+
+Translation:
+  - changed-files:
+    - any-glob-to-any-file: '**/[Tt]ranslation*/*.*.xlf'
+
+Not AL:
+  - changed-files:
+    # All files except AL files
+    - all-globs-to-all-files: '!**/*.al'
+
+Rules:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.ruleset.json'
+
+CI/CD:
+  - changed-files:
+    # All root level files except the VS Code workspace file and ruleset files
+    - all-globs-to-any-file: ['*', '!**/*.ruleset.json', '!*.code-workspace']
+    # All files in the .Al-Go and .github folders at root level
+    - any-glob-to-any-file: ['.Al-Go/**', '.github/**']

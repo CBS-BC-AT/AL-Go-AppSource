@@ -1,0 +1,135 @@
+name: Enable testbranch
+description: Enable or disable workflows used to manage the test branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      enable:
+        description: 'Enable or disable the workflows'
+        required: true
+        type: boolean
+
+env:
+  FEATURE_TEST_PREFIX: test/
+  RULESET_NAME: Testbranch
+  TEST_BRANCH: test/main
+  DEFAULT_BRANCH: main
+  RULE_EXISTS: false
+  SKIP_ALL: false
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  set-testbranch:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get the default branch
+        run: |
+          DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+          if [ -z "$DEFAULT_BRANCH" ]; then
+            echo "Failed to get the default branch."
+            exit 1
+          fi
+          echo "DEFAULT_BRANCH=$DEFAULT_BRANCH" >> $GITHUB_ENV
+
+      - name: Set environment variables
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          echo "TEST_BRANCH=${{ env.FEATURE_TEST_PREFIX }}${{ env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
+
+      - name: Enable or disable workflows
+        run: |
+          if [ "${{ github.event.inputs.enable }}" == "true" ]; then
+            echo "Enabling workflows..."
+            gh workflow enable UpdateTestBranch
+            gh workflow enable DocumentMergedCommits
+            gh api -X PATCH /repos/${{ github.repository }}/branches --data '{"delete_branch_on_merge": false}'
+          else
+            echo "Disabling workflows..."
+            gh workflow disable UpdateTestBranch
+            gh workflow disable DocumentMergedCommits
+            gh api -X PATCH /repos/${{ github.repository }}/branches --data '{"delete_branch_on_merge": true}'
+
+      - name: Check if ${{ env.TEST_BRANCH }} exists
+        if: ${{ github.event.inputs.enable == 'true' }}
+        run: |
+          if ! git ls-remote --exit-code --heads origin ${{ env.TEST_BRANCH }}; then
+            echo "Creating branch ${{ env.TEST_BRANCH }} from default branch..."
+            git fetch origin
+            git checkout -b ${{ env.TEST_BRANCH }} origin/${{ env.DEFAULT_BRANCH }}
+            git push origin ${{ env.TEST_BRANCH }}
+          else
+            echo "Branch ${{ env.TEST_BRANCH }} already exists."
+
+      - name: Check if ruleset for test branch exists
+        if: ${{ github.event.inputs.enable == 'true' }}
+        run: |
+          if gh api /repos/${{ github.repository }}/rulesets | jq -e '.[] | select(.name == "${{ env.RULESET_NAME }}")' > /dev/null; then
+            echo "Ruleset for ${{ env.TEST_BRANCH }} already exists."
+            RULE_EXISTS=true
+          else
+            echo "Ruleset for ${{ env.TEST_BRANCH }} does not exist."
+            RULE_EXISTS=false
+          fi
+          echo "RULE_EXISTS=$RULE_EXISTS" >> $GITHUB_ENV
+
+      - name: Create ruleset for test branch
+        if: ${{ github.event.inputs.enable == 'true' }} && ${{ env.RULE_EXISTS == 'false' }}
+        run: |
+          echo "Creating repo rule for ${{ env.TEST_BRANCH }}..."
+          gh api -X POST /repos/${{ github.repository }}/rulesets --input - <<EOF
+          {
+            "name": "${{ env.RULESET_NAME }}",
+            "target": "branch",
+            "enforcement": "active",
+            "conditions": {
+              "ref_name": {
+                "include": ["${{ env.TEST_BRANCH }}"]
+              }
+            },
+            "rules": [
+              {
+                "type": "required_pull_request_reviews",
+                "parameters": {
+                  "dismiss_stale_reviews": true,
+                  "require_code_owner_reviews": false
+                }
+              },
+              {
+                "type": "linear_history",
+                "parameters": {}
+              },
+              {
+                "type": "required_status_checks",
+                "parameters": {
+                  "required_status_checks": [
+                    "Pull Request Status Check"]
+                }
+              }
+            ]
+          }
+          EOF
+
+      - name: Toggle ruleset for test branch
+        if: ${{ env.RULE_EXISTS == 'true' }}
+        run: |
+          if [ "${{ github.event.inputs.enable }}" == "true" ]; then
+            echo "Enabling ruleset for ${{ env.TEST_BRANCH }}..."
+            gh api -X PATCH /repos/${{ github.repository }}/rulesets/${{ env.RULESET_NAME }} --input - <<EOF
+            {
+              "enforcement": "active"
+            }
+            EOF
+          else
+            echo "Disabling ruleset for ${{ env.TEST_BRANCH }}..."
+            gh api -X PATCH /repos/${{ github.repository }}/rulesets/${{ env.RULESET_NAME }} --input - <<EOF
+            {
+              "enforcement": "disabled"
+            }
+            EOF
+          fi
