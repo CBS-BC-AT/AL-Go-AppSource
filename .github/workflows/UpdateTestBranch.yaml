@@ -50,7 +50,7 @@ jobs:
 
       - name: 'Setup jq'
         if: ${{ env.SKIP_ALL == 'false' }}
-        uses: dcarbone/install-jq-action@v2
+        uses: dcarbone/install-jq-action@v3
 
       - name: Get PR object
         id: pull_request
