@@ -1,0 +1,49 @@
+name: Run Pre-Commit Hooks
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+        branches:
+            - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+    pre-commit:
+        name: Run Pre-Commit
+        if: github.event.pull_request.draft == false
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+            - name: Set up Python
+              uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38
+              with:
+                    python-version: 3.x
+
+            - name: Install dependencies
+              run: pip install pre-commit
+
+            - name: Install pre-commit hooks
+              run: pre-commit install
+
+            - name: Fetch branches
+              run: |
+                git fetch origin ${{ github.base_ref }}
+                git fetch origin ${{ github.head_ref }}
+
+            - name: Get list of files changed
+              id: get-changed-files
+              run: |
+                changed_files=$(git diff --name-only origin/${{ github.base_ref }} | awk '{print "\"" $0 "\""}' | tr '\n' ' ')
+                echo "::debug::Changed files: $changed_files"
+                echo "files=$changed_files" >> $GITHUB_OUTPUT
+
+            - name: Run pre-commit
+              if: steps.get-changed-files.outputs.files != ''
+              run: |
+                pre-commit run --files ${{ steps.get-changed-files.outputs.files }}

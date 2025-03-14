@@ -38,16 +38,16 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@main
         with:
           shell: powershell
 
       - name: Checkout
-        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
 
@@ -57,23 +57,23 @@ jobs:
     name: Deliver to AppSource
     steps:
       - name: Checkout
-        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@main
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@main
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'appSourceContext'
 
       - name: Deliver
-        uses: CBS-BC-AT/AL-Go-Actions/Deliver@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/Deliver@main
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -90,11 +90,11 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Checkout
-        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@v6.0
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

@@ -1,0 +1,177 @@
+{
+    "name": "Cegeka AT Ruleset",
+    "description": "Standard ruleset defined by Cegeka AT. Can be applied to all versions.",
+    "includedRuleSets": [],
+    "rules": [
+        {
+            "id": "AA0008",
+            "action": "Error",
+            "justification": "Brackets help differentiate function calls from variables. Additionally, implicit usage should be kept to a minimum."
+        },
+        {
+            "id": "AA0013",
+            "action": "Error",
+            "justification": "Unifies the codebase and makes it more readable."
+        },
+        {
+            "id": "AA0018",
+            "action": "Error",
+            "justification": "Unifies the codebase and makes it more readable."
+        },
+        {
+            "id": "AA0040",
+            "action": "Error",
+            "justification": "WITH should be avoided in general, as it can cause ambiguous functionality."
+        },
+        {
+            "id": "AA0050",
+            "action": "Error",
+            "justification": "Permissions sets should only be limited to the objects of their respective extensions."
+        },
+        {
+            "id": "AA0072",
+            "action": "None",
+            "justification": "Extensive naming pattern is intrusive and unnecessary when working with VS Code."
+        },
+        {
+            "id": "AA0139",
+            "action": "Error",
+            "justification": "Prevents overflow errors on runtime and could point out incorrectly defined text variables. Use CopyStr() to trim strings if necessary."
+        },
+        {
+            "id": "AA0161",
+            "action": "Error",
+            "justification": "There is no reason to use AssertError outside of a test codeunit."
+        },
+        {
+            "id": "AA0194",
+            "action": "Error",
+            "justification": "Actions without functionality are confusing for developers and users alike."
+        },
+        {
+            "id": "AA0198",
+            "action": "Error",
+            "justification": "Always use a unique name for your variables to avoid errors and confusion."
+        },
+        {
+            "id": "AA0202",
+            "action": "Error",
+            "justification": "Always use a unique name for your variables to avoid errors and confusion."
+        },
+        {
+            "id": "AA0203",
+            "action": "Error",
+            "justification": "Always use a unique name for your variables to avoid errors and confusion."
+        },
+        {
+            "id": "AA0204",
+            "action": "Error",
+            "justification": "Always use a unique name for your variables to avoid errors and confusion."
+        },
+        {
+            "id": "AA0207",
+            "action": "Error",
+            "justification": "There is no reason to not have an Event Subscriber without a local scope."
+        },
+        {
+            "id": "AA0211",
+            "action": "Error",
+            "justification": "There is no reason to use CalcFields() on a field that doesn't support it."
+        },
+        {
+            "id": "AA0218",
+            "action": "Hidden",
+            "justification": "It's acceptable to leave UI elements without a tooltip."
+        },
+        {
+            "id": "AA0219",
+            "action": "Hidden",
+            "justification": "It's acceptable to not start a tooltip with 'Specifies'."
+        },
+        {
+            "id": "AA0220",
+            "action": "Hidden",
+            "justification": "It's acceptable to leave UI elements without a tooltip."
+        },
+        {
+            "id": "AA0224",
+            "action": "Error",
+            "justification": "Discrepancies between enum values and captions should always be avoided."
+        },
+        {
+            "id": "AA0231",
+            "action": "Error",
+            "justification": "Error() already supports placeholders. This makes the code more readable and easier to maintain."
+        },
+        {
+            "id": "AA0243",
+            "action": "Error",
+            "justification": "Upgrade codeunits should only be used for upgrade logic. If you need to add new functionality, create a new codeunit."
+        },
+        {
+            "id": "AA0244",
+            "action": "Error",
+            "justification": "Always use a unique name for your variables to avoid errors and confusion. Variable names may be reused if they are defined in two different local scopes."
+        },
+        {
+            "id": "AA0245",
+            "action": "Error",
+            "justification": "Always use a unique name for your variables to avoid errors and confusion."
+        },
+        {
+            "id": "AW0004",
+            "action": "Error",
+            "justification": "A Blob-field has no purpose on a page, so this can prevent mistakenly adding one."
+        },
+        {
+            "id": "AW0005",
+            "action": "Error",
+            "justification": "Images shouldn't be defined implicitly. Appropriate action images improve the user experience."
+        },
+        {
+            "id": "AW0009",
+            "action": "Error",
+            "justification": "This method is outdated, and can be easily updated."
+        },
+        {
+            "id": "LC0001",
+            "action": "Error",
+            "justification": "FlowFields are read-only, and changing a value on the UI should normally result in a change to the database. Any exceptions should be supplied with either a trailing or leading comment."
+        },
+        {
+            "id": "LC0013",
+            "action": "Error",
+            "justification": "Implicit properties such as NoteBlank should be avoided. This makes the behavior of the code more predictable."
+        },
+        {
+            "id": "LC0015",
+            "action": "Hidden",
+            "justification": "We don't do permission sets around here."
+        },
+        {
+            "id": "LC0017",
+            "action": "Error",
+            "justification": "FlowFields are read-only, and changing a value on the UI should normally result in a change to the database. Any exceptions should be supplied with either a trailing or leading comment."
+        },
+        {
+            "id": "LC0024",
+            "action": "Error",
+            "justification": "This is trivially easy to fix, and avoids unwanted changes on cleanup jobs."
+        },
+        {
+            "id": "LC0036",
+            "action": "Hidden",
+            "justification": "It's acceptable to not start a tooltip with 'Specifies'."
+        },
+        {
+            "id": "LC0038",
+            "action": "Hidden",
+            "justification": "Tooltips may exceed 200 characters."
+        },
+        {
+            "id": "LC0045",
+            "action": "Hidden",
+            "justification": "An empty value isn't always necessary for enums."
+        }
+    ]
+}

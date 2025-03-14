@@ -1,0 +1,226 @@
+name: Document Merged Commits
+
+on:
+  pull_request:
+    types:
+      closed
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NOTICE_COMMENT_TAG: <!-- UpdateTestBranch/NOTICE -->
+  COMMIT_COMMENT_TAG: <!-- UpdateTestBranch/COMMIT -->
+  BOT_LABEL: Automated
+  FEATURE_TEST_PREFIX: test/
+  TEST_BRANCH: test/main
+  SKIP_ALL: false
+  ADDED_COMMITS: ''
+  PICKED_COMMITS: ''
+  FEATURE_BRANCH: ''
+  FEATURE_PR_NUMBER: ''
+
+jobs:
+  list-commits:
+    name: List commits in feature PR
+    if: ${{ github.event.pull_request.merged == true }} && contains(github.event.pull_request.labels.*.name, env.BOT_LABEL)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          echo "NOTICE_COMMENT_TAG=${{ vars.UPDATETESTBRANCH_NOTICE_COMMENT_TAG || env.NOTICE_COMMENT_TAG }}" >> $GITHUB_ENV
+          echo "COMMIT_COMMENT_TAG=${{ vars.UPDATETESTBRANCH_COMMIT_COMMENT_TAG || env.COMMIT_COMMENT_TAG }}" >> $GITHUB_ENV
+          echo "BOT_LABEL=${{ vars.UPDATETESTBRANCH_BOT_LABEL || env.BOT_LABEL }}" >> $GITHUB_ENV
+          echo "FEATURE_TEST_PREFIX=${{ vars.UPDATETESTBRANCH_FEATURE_TEST_PREFIX || env.FEATURE_TEST_PREFIX }}" >> $GITHUB_ENV
+          echo "TEST_BRANCH=${{ vars.UPDATETESTBRANCH_TEST_BRANCH || env.TEST_BRANCH }}" >> $GITHUB_ENV
+
+      - name: Check if head branch is a feature test branch
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          head_branch="${{ github.head_ref }}"
+          feature_test_prefix="${{ env.FEATURE_TEST_PREFIX }}"
+          base_branch="${{ github.base_ref }}"
+          if [ "$base_branch" != ${{ env.TEST_BRANCH }} ]; then
+            echo "SKIP_ALL=true" >> $GITHUB_ENV
+            echo "::notice::PR is not targeting test branch ${{ env.TEST_BRANCH }}. Skipping."
+            exit 0
+          fi
+          if [[ "$head_branch" != $feature_test_prefix* ]]; then
+            echo "$head_branch is not a feature test branch. Skipping..."
+            echo "SKIP_ALL=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          feature_branch=${head_branch#$feature_test_prefix}
+          if [ -z "$feature_branch" ]; then
+            echo "::error::Unable to determine feature branch name from $head_branch with prefix $feature_test_prefix."
+            echo "SKIP_ALL=true" >> $GITHUB_ENV
+            exit 1
+          else
+            echo "Feature branch should be called $feature_branch."
+            echo "FEATURE_BRANCH=$feature_branch" >> $GITHUB_ENV
+          fi
+
+      - name: Set up Git
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Checkout repository
+        if: ${{ env.SKIP_ALL == 'false' }}
+        uses: actions/checkout@v4
+
+      - name: 'Setup jq'
+        if: ${{ env.SKIP_ALL == 'false' }}
+        uses: dcarbone/install-jq-action@v2
+
+      - name: Find feature PR number
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          feature_branch="${{ env.FEATURE_BRANCH }}"
+          pr_json=$(gh pr view $feature_branch --json title,number 2>/dev/null)
+          if [ $? != 0 ]; then
+            echo "SKIP_ALL=true" >> $GITHUB_ENV
+            echo "::error::Unable to find PR with head ref $feature_branch."
+            exit 1
+          fi
+
+          pr_number=$(echo "$pr_json" | jq '.number')
+          pr_title=$(echo "$pr_json" | jq -r '.title' | tr -dc 'A-Za-z0-9 ')
+
+          echo "FEATURE_PR_NUMBER=$pr_number" >> $GITHUB_ENV
+          echo "Feature PR: #$pr_number - $pr_title"
+
+      - name: Get newly added commits
+        id: list-commits
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          git fetch origin
+          added_commits=$(git log --no-merges --pretty=format:%h ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }})
+
+          echo "Non-merge commits added:"
+          for commit in $added_commits; do
+            echo "- $commit"
+          done
+
+          {
+            echo "ADDED_COMMITS<<EOF"
+            echo "$added_commits"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      - name: Get SHAs of original commits
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          picked_commits=()
+          added_commits=(${{ env.ADDED_COMMITS }})
+          for commit in "${added_commits[@]}"; do
+            echo "- $commit:"
+            commit_comment=$(git show -s --format=%B $commit)
+            echo "$commit_comment"
+            commit_sha=$(echo "$commit_comment" | grep -oE '^\s*\(cherry picked from commit .*\)$' | sed 's/^\s*(cherry picked from commit \(.\{7\}\).*/\1/')
+            if [ -n "$commit_sha" ]; then
+              echo "Found original commit $commit_sha."
+              picked_commits+=("$commit_sha")
+            else
+              echo "No commit found."
+            fi
+          done
+
+          if [ -n "$picked_commits" ]; then
+            echo "Original commits:"
+            echo "${picked_commits[@]}"
+
+            {
+              echo "PICKED_COMMITS<<EOF"
+              for commit in "${picked_commits[@]}"; do
+                echo "$commit"
+              done
+              echo "EOF"
+            } >> $GITHUB_ENV
+          else
+            echo "No original commits found."
+          fi
+
+      - name: Clean up comments
+        if: ${{ env.SKIP_ALL == 'false' }}
+        uses: actions/github-script@v7
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const oldPrComments = github.rest.issues.listComments({
+              issue_number: ${{ env.FEATURE_PR_NUMBER }},
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            oldPrComments.then(comments => {
+              for (const comment of comments.data) {
+                if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith('${{ env.NOTICE_COMMENT_TAG }}')) {
+                  github.rest.issues.deleteComment({
+                    comment_id: comment.id,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo
+                  })
+                  process.stdout.write(`Deleted comment ${comment.html_url}\n`)
+                }
+              }
+            })
+
+      - name: Set comment body
+        id: set-comment-body
+        if: ${{ env.SKIP_ALL == 'false' }}
+        run: |
+          picked_commits=(${{ env.PICKED_COMMITS }})
+          if [ -n "$picked_commits" ]; then
+            body='${{ github.event.pull_request.html_url }} merged the following commits from '${{ env.FEATURE_BRANCH }}' into '${{ github.head_ref }}':
+
+          '
+            for commit in "${picked_commits[@]}"; do
+              body="$body- $commit
+          "
+            done
+            body="$body"'
+          This list contains all cherry-picked commits that were successfully squash merged into '${{ github.base_ref }}' by ${{ github.event.pull_request.html_url }}. To ensure the update workflow is working as expected, please do not remove or add any commits to this comment.'
+            echo -e "$body"
+            {
+              echo "COMMENT_BODY<<EOF"
+              echo "$body"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on the original pull request
+        if: ${{ env.SKIP_ALL == 'false' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z '${{ steps.set-comment-body.outputs.COMMENT_BODY }}' ]; then
+            echo "No commits to document."
+            exit 0
+          fi
+          echo '${{ steps.set-comment-body.outputs.COMMENT_BODY }}'
+          gh pr comment ${{ env.FEATURE_PR_NUMBER }} --body '${{ env.COMMIT_COMMENT_TAG }}
+          ${{ steps.set-comment-body.outputs.COMMENT_BODY }}'
+
+  delete-head:
+    name: Delete head branch
+    needs: list-commits
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git
+        run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Delete head branch
+        run: |
+            branch="${{ github.head_ref }}"
+            if [ -n "$(git ls-remote --heads origin $branch)" ]; then
+              git push origin --delete $branch
+            else
+              echo "Unable to locate branch $branch - It most likely has already been deleted."
+            fi
