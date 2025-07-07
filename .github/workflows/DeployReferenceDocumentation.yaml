@@ -30,18 +30,18 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@main
+        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@67df0e937d11a1d77725234c29c4c7c6b8aef845
         with:
           shell: powershell
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@main
+        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@67df0e937d11a1d77725234c29c4c7c6b8aef845
         with:
           shell: powershell
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: CBS-BC-AT/AL-Go-Actions/DetermineDeploymentEnvironments@main
+        uses: CBS-BC-AT/AL-Go/Actions/DetermineDeploymentEnvironments@67df0e937d11a1d77725234c29c4c7c6b8aef845
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -54,7 +54,7 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Build Reference Documentation
-        uses: CBS-BC-AT/AL-Go-Actions/BuildReferenceDocumentation@main
+        uses: CBS-BC-AT/AL-Go/Actions/BuildReferenceDocumentation@67df0e937d11a1d77725234c29c4c7c6b8aef845
         with:
           shell: powershell
           artifacts: 'latest'
@@ -71,7 +71,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@main
+        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@67df0e937d11a1d77725234c29c4c7c6b8aef845
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

@@ -117,7 +117,7 @@ jobs:
             echo "- $commit:"
             commit_comment=$(git show -s --format=%B $commit)
             echo "$commit_comment"
-            commit_sha=$(echo "$commit_comment" | grep -oE '^\s*\(cherry picked from commit .*\)$' | sed 's/^\s*(cherry picked from commit \(.\{7\}\).*/\1/')
+            commit_sha=$(echo "$commit_comment" | grep -oE '^\s*\(cherry picked from commit .*\)$' | sed 's/^\s*(cherry picked from commit \(.\{40\}\).*/\1/')
             if [ -n "$commit_sha" ]; then
               echo "Found original commit $commit_sha."
               picked_commits+=("$commit_sha")

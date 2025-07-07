@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/v6.3/Schema/algoreposettingssyntax.json",
+  "$schema": "https://raw.githubusercontent.com/CBS-BC-AT/AL-Go/Actions/67df0e937d11a1d77725234c29c4c7c6b8aef845/settings.schema.json",
   "buildModes": [
     "Default"
   ],
@@ -14,13 +14,13 @@
   "rulesetFile": "CegekaAT.ruleset.json",
   "runs-on": "ubuntu-latest",
   "skipUpgrade": true,
+  "BcContainerHelperVersion": "latest",
   "templateUrl": "https://github.com/CBS-BC-AT/AL-Go-AppSource@cegeka",
   "templateFiles": [
     ".github/DeployTo*.ps1",
     ".schemas/*"
   ],
   "type": "AppSource App",
-  "UpdateGitHubGoSystemFilesSchedule": "0 2 * * 2",
   "useCompilerFolder": true,
   "vsixFile": "latest"
 }

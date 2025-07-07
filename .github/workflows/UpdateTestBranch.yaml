@@ -196,7 +196,7 @@ jobs:
               continue
             fi
             if [[ $(git rev-parse --verify "$commit" 2>/dev/null) ]]; then
-              commit=${commit:0:7}
+              commit=${commit:0:8}
               picked_commits+=("$commit")
               echo "::debug::Commit $commit found."
             else
@@ -206,7 +206,7 @@ jobs:
           unset IFS
 
           echo "Cherry-picked commits:"
-          for commit in $picked_commits; do
+          for commit in "${picked_commits[@]}"; do
             commit_message=$(git log --format=%s -n 1 $commit)
             echo "$(git log --pretty=format:"- %s (%H)" -n 1 $commit)"
             echo "::debug::$commit"
@@ -274,13 +274,28 @@ jobs:
           if [ -z "$picked_commits" ] && [ -z "$added_commits" ]; then
             new_commits=("${feature_commits[@]}")
           else
-            for commit in "${feature_commits[@]}"; do
-              if [[ ! " ${picked_commits[@]} " =~ " $commit " ]] && [[ ! " ${added_commits[@]} " =~ " $commit " ]]; then
-                new_commits+=($commit)
+            for feature_commit in "${feature_commits[@]}"; do
+              found=0
+              for picked in "${picked_commits[@]}"; do
+                if [[ "$picked" == "$feature_commit"* ]]; then
+                  found=1
+                  break
+                fi
+              done
+              if [ $found -eq 0 ]; then
+                for added in "${added_commits[@]}"; do
+                  if [[ "$added" == "$feature_commit"* ]]; then
+                    found=1
+                    break
+                  fi
+                done
+              fi
+              if [ $found -eq 0 ]; then
+                new_commits+=("$feature_commit")
               fi
             done
           fi
-          if [ -z "$new_commits" ]; then
+          if [ ${#new_commits[@]} -eq 0 ]; then
             echo "SKIP_ALL=true" >> $GITHUB_ENV
             echo "::notice::No new commits to cherry-pick found. Skipping update."
           else
@@ -326,8 +341,14 @@ jobs:
           no_changes=true
 
           for commit in "${feature_commits[@]}"; do
-            git cherry-pick --empty=keep -x $commit 1>/dev/null || true
+            git cherry-pick --empty=keep -x $commit 1>/dev/null
+            if [ $? -ne 0 ]; then
+              echo "::error::Cherry-pick failed for commit $commit."
+              success=false
+              break
+            fi
             if [ -n "$(git status --porcelain | grep '^U')" ]; then
+              echo "::error::Unmerged files detected after cherry-pick of $commit."
               success=false
               break
             fi
@@ -342,7 +363,9 @@ jobs:
           echo "NO_CHANGES=$no_changes" >> $GITHUB_ENV
           {
             echo "PICKED_COMMITS<<EOF"
-            echo "${successful_commits[*]}"
+            for commit in "${successful_commits[@]}"; do
+              printf "%s\n" "$commit"
+            done
             echo "EOF"
           } >> $GITHUB_ENV
 
@@ -488,48 +511,51 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            let newPrComments = [];
-            if ("${{ env.TEST_PR_URL }}") {
-              const urlSubstrings = "${{ env.TEST_PR_URL }}".split('/');
-              const newPrNumber = urlSubstrings[urlSubstrings.length - 1];
+            (async () => {
+              let newPrComments = [];
+              if ("${{ env.TEST_PR_URL }}") {
+                const urlSubstrings = "${{ env.TEST_PR_URL }}".split('/');
+                const newPrNumber = urlSubstrings[urlSubstrings.length - 1];
+                try {
+                  newPrComments = await github.rest.issues.listComments({
+                    issue_number: newPrNumber,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo
+                  });
+                } catch (error) {
+                  process.stdout.write(`::error::Error retrieving comments from ${newPrNumber}: ${error.message}\n`);
+                  process.exit(1);
+                }
+              }
+              let oldPrComments = [];
               try {
-                newPrComments = await github.rest.issues.listComments({
-                  issue_number: newPrNumber,
+                oldPrComments = await github.rest.issues.listComments({
+                  issue_number: context.issue.number,
                   owner: context.repo.owner,
                   repo: context.repo.repo
                 });
               } catch (error) {
-                process.stdout.write(`::error::Error retrieving comments from ${newPrNumber}: ${error.message}\n`);
+                process.stdout.write(`::error::Error retrieving comments from ${context.issue.number}: ${error.message}\n`);
                 process.exit(1);
               }
-            }
-            try {
-              const oldPrComments = await github.rest.issues.listComments({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo
-              });
-            } catch (error) {
-              process.stdout.write(`::error::Error retrieving comments from ${context.issue.number}: ${error.message}\n`);
-              process.exit(1);
-            }
-            const allComments = [oldPrComments, newPrComments];
-            allComments.forEach(comments => {
-              comments.data.forEach(comment => {
-                if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith('${{ env.NOTICE_COMMENT_TAG }}')) {
-                  try {
-                    await github.rest.issues.deleteComment({
-                      comment_id: comment.id,
-                      owner: context.repo.owner,
-                      repo: context.repo.repo
-                    });
-                    process.stdout.write(`Deleted comment ${comment.html_url}\n`);
-                  } catch (error) {
-                    process.stdout.write(`::notice::Error deleting comment ${comment.html_url}: ${error.message}\n`);
+              const allComments = [oldPrComments, newPrComments];
+              allComments.forEach(comments => {
+                comments.data.forEach(comment => {
+                  if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith('${{ env.NOTICE_COMMENT_TAG }}')) {
+                    try {
+                      await github.rest.issues.deleteComment({
+                        comment_id: comment.id,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo
+                      });
+                      process.stdout.write(`Deleted comment ${comment.html_url}\n`);
+                    } catch (error) {
+                      process.stdout.write(`::notice::Error deleting comment ${comment.html_url}: ${error.message}\n`);
+                    }
                   }
-                }
+                });
               });
-            });
+            })();
 
       - name: Comment on the new pull request
         id: comment_on_new_pr
@@ -547,7 +573,7 @@ jobs:
           ```bash
           git fetch origin ${{ env.FEATURE_TEST_BRANCH }}
           git checkout ${{ env.FEATURE_TEST_BRANCH }}
-          git reset --hard ${{ env.FEATURE_TEST_BRANCH }}
+          git reset --hard origin/${{ env.FEATURE_TEST_BRANCH }}
           git cherry-pick -x '"$failed_commit"'
           ```
           2) Resolve the merge conflicts and push the changes.
