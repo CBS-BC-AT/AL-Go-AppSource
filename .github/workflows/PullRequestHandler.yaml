@@ -3,6 +3,11 @@ name: 'Pull Request Build'
 on:
   pull_request_target:
     branches: [ 'main' ]
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - ready_for_review
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
@@ -25,14 +30,14 @@ env:
 
 jobs:
   PregateCheck:
-    if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
+    if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request') && (github.event.pull_request.draft == false)
     runs-on: windows-latest
     steps:
-      - uses: CBS-BC-AT/AL-Go/Actions/VerifyPRChanges@67df0e937d11a1d77725234c29c4c7c6b8aef845
+      - uses: CBS-BC-AT/AL-Go/Actions/VerifyPRChanges@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
 
   Initialization:
     needs: [ PregateCheck ]
-    if: (!failure() && !cancelled())
+    if: (!failure() && !cancelled()) && (github.event.pull_request.draft == false)
     runs-on: [ windows-latest ]
     outputs:
       projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
@@ -45,7 +50,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go/Actions/DumpWorkflowInfo@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/DumpWorkflowInfo@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
 
@@ -57,13 +62,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
 
       - name: Read settings
         id: ReadSettings
-        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
           get: shortLivedArtifactsRetentionDays
@@ -76,14 +81,14 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: CBS-BC-AT/AL-Go/Actions/DetermineProjectsToBuild@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/DetermineProjectsToBuild@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
 
   Build:
     needs: [ Initialization ]
-    if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
+    if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0 && (github.event.pull_request.draft == false)
     strategy:
       matrix:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].buildDimensions }}
@@ -109,13 +114,13 @@ jobs:
 
   StatusCheck:
     needs: [ Initialization, Build ]
-    if: (!cancelled())
+    if: (!cancelled()) && (github.event.pull_request.draft == false)
     runs-on: [ windows-latest ]
     name: Pull Request Status Check
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: CBS-BC-AT/AL-Go/Actions/PullRequestStatusCheck@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/PullRequestStatusCheck@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -123,7 +128,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         if: success() || failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}

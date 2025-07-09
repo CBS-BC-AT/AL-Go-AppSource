@@ -1,10 +1,106 @@
 {
-    "folders":  [
-                    {
-                        "path":  ".AL-Go"
-                    }
-                ],
-    "settings":  {
-
-                 }
+  "folders": [
+    {
+      "path": ".AL-Go"
+    },
+    {
+      "path": ".github"
+    },
+    {
+      "path": "dependencies"
+    },
+    {
+      "path": "resources"
+    },
+    {
+      "path": "scripts"
+    }
+  ],
+  "settings": {
+    "al.assemblyProbingPaths": [
+      "./.netpackages",
+      "C:/Windows/assembly/"
+    ],
+    "al.backgroundCodeAnalysis": true,
+    "al.codeAnalyzers": [
+      "${CodeCop}",
+      "${UICop}",
+      "${AppSourceCop}",
+      "${analyzerFolder}BusinessCentral.LinterCop.dll"
+    ],
+    "al.enableCodeActions": true,
+    "al.enableCodeAnalysis": true,
+    "al.enableExternalRulesets": true,
+    "al.ruleSetPath": "../CegekaAT.ruleset.json",
+    "alOutline.addDataItemToReportColumnName": true,
+    "alOutline.addToolTipsToPageFields": true,
+    "alOutline.codeCleanupActions": [
+      "AddApplicationAreas",
+      "AddMissingParentheses",
+      "ConvertObjectIdsToNames",
+      "FixIdentifiersCase",
+      "FixKeywordsCase",
+      "MakeFlowFieldsReadOnly",
+      "RemoveRedundantDataClassification",
+      "RemoveProceduresSemicolon",
+      "RemoveBeginEnd",
+      "RemoveEmptyTriggers",
+      "RemoveEmptySections",
+      "RemoveStrSubstNoFromError",
+      "RemoveUnusedVariables",
+      "CollapseEmptyBrackets",
+      "SortProcedures",
+      "SortTriggers",
+      "SortVariables",
+      "SortPermissionSetList",
+      "RemoveEmptyLines",
+      "TrimTrailingWhitespace",
+      "FormatDocument"
+    ],
+    "alOutline.fixCaseRemovesQuotesFromDataTypeIdentifiers": true,
+    "alOutline.fixCodeCopMissingParenthesesOnSave": true,
+    "alOutline.idReservationProvider": "ALObjectIdNinja",
+    "alOutline.openDefinitionInNewTab": true,
+    "CRS.ExtensionObjectNamePattern": "<Prefix><BaseName><Suffix>",
+    "CRS.FileNamePattern": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+    "CRS.FileNamePatternExtensions": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+    "CRS.FileNamePatternPageCustomizations": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+    "CRS.ObjectNamePrefix": "",
+    "CRS.ObjectNameSuffix": "",
+    "CRS.RenameWithGit": false,
+    "debug.onTaskErrors": "abort",
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modifications",
+    "files.autoSave": "afterDelay",
+    "files.trimTrailingWhitespace": true,
+    "githubPullRequests.assignCreated": "${user}",
+    "githubPullRequests.defaultMergeMethod": "squash",
+    "githubPullRequests.pullBranch": "always",
+    "githubPullRequests.pushBranch": "always",
+    "gitlens.advanced.blame.customArguments": [
+      "-CCC"
+    ],
+    "gitlens.advanced.fileHistoryFollowsRenames": true,
+    "gitlens.blame.ignoreWhitespace": true
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "command": "../.AL-Go/ConfirmLaunch.ps1",
+        "detail": "Asks the user to confirm before launching the project. Useful when deploying to a production environment.",
+        "group": "build",
+        "label": "Confirm Launch",
+        "type": "shell",
+        "presentation": {
+          "clear": true,
+          "close": true,
+          "echo": false,
+          "reveal": "never",
+          "revealProblems": "never",
+          "showReuseMessage": false
+        }
+      }
+    ]
+  }
 }

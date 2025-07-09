@@ -1,0 +1,57 @@
+{
+    "name": "AppSourceCop for OnPrem",
+    "description": "Disables all non-applical rules of AppSourceCop to be used on on-premise projects.",
+    "includedRuleSets": [],
+    "rules": [
+        {
+            "id": "AS0013",
+            "action": "None",
+            "justification": "Allow app id ranges for per-tenant extensions."
+        },
+        {
+            "id": "AS0016",
+            "action": "Hidden",
+            "justification": "On-premise projects can have missing DataClassification property."
+        },
+        {
+            "id": "AS0051",
+            "action": "Hidden",
+            "justification": "Leaving app manifest properties blank is allowed on on-premise applications."
+        },
+        {
+            "id": "AS0052",
+            "action": "Hidden",
+            "justification": "Leaving app manifest properties blank is allowed on on-premise applications."
+        },
+        {
+            "id": "AS0053",
+            "action": "None",
+            "justification": "Property 'type' can be 'OnPrem'."
+        },
+        {
+            "id": "AS0054",
+            "action": "Hidden",
+            "justification": "Mandatory affixes are not required for on-premise application."
+        },
+        {
+            "id": "AS0059",
+            "action": "Hidden",
+            "justification": "Tables 'Permission' and 'Premission Set' are not read-only on on-premise server instances."
+        },
+        {
+            "id": "AS0084",
+            "action": "None",
+            "justification": "PTE applications use a different id range."
+        },
+        {
+            "id": "AS0092",
+            "action": "None",
+            "justification": "Azure Application Insights is not applicable to PTE projects."
+        },
+        {
+            "id": "AS0103",
+            "action": "Hidden",
+            "justification": "We don't use app-level permission sets."
+        }
+    ]
+}

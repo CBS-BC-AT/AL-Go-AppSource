@@ -41,7 +41,7 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go/Actions/DumpWorkflowInfo@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/DumpWorkflowInfo@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
 
@@ -50,18 +50,18 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go/Actions/ReadSecrets@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/ReadSecrets@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -69,7 +69,7 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Add existing app
-        uses: CBS-BC-AT/AL-Go/Actions/AddExistingApp@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/AddExistingApp@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -79,7 +79,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@67df0e937d11a1d77725234c29c4c7c6b8aef845
+        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

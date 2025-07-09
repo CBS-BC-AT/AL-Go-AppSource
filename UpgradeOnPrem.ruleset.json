@@ -1,181 +1,210 @@
 {
-    "name": "Cegeka AT Ruleset",
-    "description": "Standard ruleset defined by Cegeka AT. Can be applied to all versions.",
+    "name": "Upgrade for OnPrem",
+    "description": "Disables all rules that can be ignored when upgrading code from an older version to a new OnPrem environment.",
     "includedRuleSets": [
         {
-            "path": "AppSourceOnPrem.ruleset.json",
+            "path": "https://raw.githubusercontent.com/StefanMaron/BusinessCentral.LinterCop/refs/heads/master/BusinessCentral.LinterCop/LinterCop.ruleset.json",
+            "action": "Hidden"
+        },
+        {
+            "path": "CegekaAT.ruleset.json",
             "action": "Default"
         }
     ],
     "rules": [
         {
+            "id": "AA0215",
+            "action": "None",
+            "justification": "Including the object ID in the name is useful for upgrade projects."
+        },
+        {
+            "id": "AA0005",
+            "action": "None",
+            "justification": "BEGIN..END may be used for single-line statements as well."
+        },
+        {
             "id": "AA0008",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Brackets help differentiate function calls from variables. Additionally, implicit usage should be kept to a minimum."
         },
         {
             "id": "AA0013",
-            "action": "Error",
+            "action": "Info",
             "justification": "Unifies the codebase and makes it more readable."
         },
         {
             "id": "AA0018",
-            "action": "Error",
+            "action": "Info",
             "justification": "Unifies the codebase and makes it more readable."
         },
         {
             "id": "AA0040",
-            "action": "Error",
+            "action": "Info",
             "justification": "WITH should be avoided in general, as it can cause ambiguous functionality."
         },
         {
             "id": "AA0050",
-            "action": "Error",
+            "action": "Info",
             "justification": "Permissions sets should only be limited to the objects of their respective extensions."
         },
         {
-            "id": "AA0072",
+            "id": "AA0074",
             "action": "None",
-            "justification": "Extensive naming pattern is intrusive and unnecessary when working with VS Code."
+            "justification": "Old labels may not follow the current label conventions, but they are still valid."
+        },
+        {
+            "id": "AA0137",
+            "action": "Info",
+            "justification": "Unused variables will be removed over time during upgrade projects."
         },
         {
             "id": "AA0139",
-            "action": "Error",
+            "action": "Info",
             "justification": "Prevents overflow errors on runtime and could point out incorrectly defined text variables. Use CopyStr() to trim strings if necessary."
         },
         {
+            "id": "AA0150",
+            "action": "Info",
+            "justification": "Old code may still use reference parameters even when they are not necessary. This is not a problem in upgrade projects, as the code will be refactored over time."
+        },
+        {
             "id": "AA0161",
-            "action": "Error",
+            "action": "Info",
             "justification": "There is no reason to use AssertError outside of a test codeunit."
         },
         {
             "id": "AA0194",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Actions without functionality are confusing for developers and users alike."
         },
         {
             "id": "AA0198",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Always use a unique name for your variables to avoid errors and confusion."
         },
         {
             "id": "AA0202",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Always use a unique name for your variables to avoid errors and confusion."
         },
         {
             "id": "AA0203",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Always use a unique name for your variables to avoid errors and confusion."
         },
         {
             "id": "AA0204",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Always use a unique name for your variables to avoid errors and confusion."
         },
         {
             "id": "AA0207",
-            "action": "Error",
+            "action": "Info",
             "justification": "There is no reason to not have an Event Subscriber without a local scope."
         },
         {
             "id": "AA0211",
-            "action": "Error",
+            "action": "Info",
             "justification": "There is no reason to use CalcFields() on a field that doesn't support it."
         },
         {
             "id": "AA0218",
-            "action": "Hidden",
+            "action": "None",
             "justification": "It's acceptable to leave UI elements without a tooltip."
         },
         {
             "id": "AA0219",
-            "action": "Hidden",
+            "action": "None",
             "justification": "It's acceptable to not start a tooltip with 'Specifies'."
         },
         {
             "id": "AA0220",
-            "action": "Hidden",
+            "action": "None",
             "justification": "It's acceptable to leave UI elements without a tooltip."
         },
         {
             "id": "AA0224",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Discrepancies between enum values and captions should always be avoided."
         },
         {
             "id": "AA0231",
-            "action": "Error",
+            "action": "Info",
             "justification": "Error() already supports placeholders. This makes the code more readable and easier to maintain."
         },
         {
             "id": "AA0243",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Upgrade codeunits should only be used for upgrade logic. If you need to add new functionality, create a new codeunit."
         },
         {
             "id": "AA0244",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Always use a unique name for your variables to avoid errors and confusion. Variable names may be reused if they are defined in two different local scopes."
         },
         {
             "id": "AA0245",
-            "action": "Error",
+            "action": "Warning",
             "justification": "Always use a unique name for your variables to avoid errors and confusion."
         },
         {
-            "id": "AA0248",
-            "action": "None",
-            "justification": "As of Business Central 25.0, the 'this' keyword does not work with functions calls within a table extension."
-        },
-        {
-            "id": "AL1026",
-            "action": "Error",
-            "justification": "An invalid translation file can cause Business Central to ignore the translations entirely. XLIFF files should always be valid."
+            "id": "AA0470",
+            "action": "Hidden",
+            "justification": "Old labels may lack proper documentation."
         },
         {
             "id": "AW0004",
-            "action": "Error",
+            "action": "Info",
             "justification": "A Blob-field has no purpose on a page, so this can prevent mistakenly adding one."
         },
         {
             "id": "AW0005",
-            "action": "Error",
+            "action": "Info",
             "justification": "Images shouldn't be defined implicitly. Appropriate action images improve the user experience."
         },
         {
+            "id": "AW0006",
+            "action": "Hidden",
+            "justification": "Older versions of Business Central did not check promoted actions of action groups."
+        },
+        {
             "id": "AW0009",
-            "action": "Error",
+            "action": "Warning",
             "justification": "This method is outdated, and can be easily updated."
         },
         {
+            "id": "AW0011",
+            "action": "Hidden",
+            "justification": "Old code may use implicit definitions of UsageCategory and ApplicationArea."
+        },
+        {
             "id": "LC0001",
-            "action": "Error",
+            "action": "Info",
             "justification": "FlowFields are read-only, and changing a value on the UI should normally result in a change to the database. Any exceptions should be supplied with either a trailing or leading comment."
         },
         {
             "id": "LC0013",
-            "action": "Error",
-            "justification": "Implicit properties such as NoteBlank should be avoided. This makes the behavior of the code more predictable."
+            "action": "Info",
+            "justification": "Implicit properties such as NotBlank should be avoided. This makes the behavior of the code more predictable."
         },
         {
             "id": "LC0015",
-            "action": "Hidden",
+            "action": "None",
             "justification": "We don't do permission sets around here."
         },
         {
             "id": "LC0017",
-            "action": "Error",
+            "action": "Info",
             "justification": "FlowFields are read-only, and changing a value on the UI should normally result in a change to the database. Any exceptions should be supplied with either a trailing or leading comment."
         },
         {
             "id": "LC0024",
-            "action": "Error",
+            "action": "Info",
             "justification": "This is trivially easy to fix, and avoids unwanted changes on cleanup jobs."
         },
         {
             "id": "LC0036",
-            "action": "Hidden",
+            "action": "None",
             "justification": "It's acceptable to not start a tooltip with 'Specifies'."
         },
         {
@@ -189,14 +218,19 @@
             "justification": "An empty value isn't always necessary for enums."
         },
         {
-            "id": "LC0084",
-            "action": "None",
-            "justification": "Using the default error message for 'Get' and 'Find' methods is acceptable, as it is clear, concise and translated."
+            "id": "LC0087",
+            "action": "Info",
+            "justification": "GUID comparisons with an empty GUID can be replaced with IsNullGUID(). "
         },
         {
-            "id": "LC0089i",
-            "action": "None",
-            "justification": "This rule is intrusive and only useful to debug complexity issues. It is not necessary for standard development."
+            "id": "LC0089",
+            "action": "Hidden",
+            "justification": "Upgrade projects inherit functions from previous development projects, so complexity won't be examined."
+        },
+        {
+            "id": "LC0090",
+            "action": "Hidden",
+            "justification": "Upgrade projects inherit functions from previous development projects, so complexity won't be examined."
         }
     ]
 }

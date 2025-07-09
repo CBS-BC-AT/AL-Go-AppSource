@@ -119,3 +119,10 @@ CI/CD:
     - all-globs-to-any-file: ['*', '!**/*.ruleset.json', '!*.code-workspace']
     # All files in the .Al-Go and .github folders at root level
     - any-glob-to-any-file: ['.Al-Go/**', '.github/**']
+
+# Labels for branches
+Release:
+  - base-branch: ['^master$', '^main$', '^release/*']
+
+Testing:
+  - base-branch: '^test/main$'
