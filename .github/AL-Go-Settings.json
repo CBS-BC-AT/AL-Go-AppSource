@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/CBS-BC-AT/AL-Go/Actions/a9866c5ae2a6bf61cf6d02441b5900e6584a5884/settings.schema.json",
+  "$schema": "https://raw.githubusercontent.com/CBS-BC-AT/AL-Go-Actions/main/settings.schema.json",
   "buildModes": [
     "Default"
   ],

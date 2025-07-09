@@ -33,7 +33,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request') && (github.event.pull_request.draft == false)
     runs-on: windows-latest
     steps:
-      - uses: CBS-BC-AT/AL-Go/Actions/VerifyPRChanges@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+      - uses: CBS-BC-AT/AL-Go-Actions/VerifyPRChanges@main
 
   Initialization:
     needs: [ PregateCheck ]
@@ -50,7 +50,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go/Actions/DumpWorkflowInfo@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@main
         with:
           shell: powershell
 
@@ -62,13 +62,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
 
       - name: Read settings
         id: ReadSettings
-        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@main
         with:
           shell: powershell
           get: shortLivedArtifactsRetentionDays
@@ -81,7 +81,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: CBS-BC-AT/AL-Go/Actions/DetermineProjectsToBuild@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/DetermineProjectsToBuild@main
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -120,7 +120,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: CBS-BC-AT/AL-Go/Actions/PullRequestStatusCheck@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/PullRequestStatusCheck@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -128,7 +128,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@main
         if: success() || failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}

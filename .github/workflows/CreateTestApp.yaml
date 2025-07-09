@@ -53,7 +53,7 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Dump Workflow Information
-        uses: CBS-BC-AT/AL-Go/Actions/DumpWorkflowInfo@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/DumpWorkflowInfo@main
         with:
           shell: powershell
 
@@ -62,18 +62,18 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowInitialize@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
 
       - name: Read settings
-        uses: CBS-BC-AT/AL-Go/Actions/ReadSettings@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSettings@main
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: CBS-BC-AT/AL-Go/Actions/ReadSecrets@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/ReadSecrets@main
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -81,7 +81,7 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Creating a new test app
-        uses: CBS-BC-AT/AL-Go/Actions/CreateApp@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/CreateApp@main
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -95,7 +95,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: CBS-BC-AT/AL-Go/Actions/WorkflowPostProcess@a9866c5ae2a6bf61cf6d02441b5900e6584a5884
+        uses: CBS-BC-AT/AL-Go-Actions/WorkflowPostProcess@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
